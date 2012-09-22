@@ -10,7 +10,7 @@ require_once( dirname(__FILE__) . '/setup.php' );
 	//--> require_once(STYLESHEETPATH . "/advanced.php");
 	
 // ====================================================
-// = YOUR FUNCTIONS - Where you should add your code..  =
+// = YOUR FUNCTIONS - Where you should add your code  =
 // ====================================================
 
 

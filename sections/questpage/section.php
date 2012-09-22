@@ -52,6 +52,25 @@ class QuestPage extends PageLinesSection {
 			$sql="alter table wp_cp add column status INT";
 $rt=mysql_query($sql);  
 global $wpdb;
+if (!is_user_logged_in()) {
+	$page_id = get_the_ID();
+$current_user = wp_get_current_user();
+$page_title = get_the_title($page_id);
+$page_id_manual = $wpdb->get_var("SELECT post_parent FROM wp_posts WHERE post_title = '$page_title' order by id desc limit 1 ");
+$table_name = $wpdb->prefix . "cp" ;
+$table_name_meta = $wpdb->prefix."postmeta" ;
+global $current_user;
+$user_id = $current_user->ID;
+$sum = $wpdb->get_var("SELECT meta_value FROM wp_postmeta WHERE meta_key='sum' and post_id= '$page_id_manual' ");
+echo $sum;
+echo'<div class="entry">';
+
+						 the_content( __( '<p class="serif">Read the rest of this page &rarr;</p>', 'buddypress' ) ); ?>
+
+						<?php wp_link_pages( array( 'before' => '<div class="page-link"><p>' . __( 'Pages: ', 'buddypress' ), 'after' => '</p></div>', 'next_or_number' => 'number' ) ); ?>
+						<?php edit_post_link( __( 'Edit this page.', 'buddypress' ), '<p class="edit-link">', '</p>'); 
+					
+	}else{
 $page_id = get_the_ID();
 $current_user = wp_get_current_user();
 $page_title = get_the_title($page_id);
@@ -186,11 +205,11 @@ echo'<div class="entry">';
 
 			<?php 
 			  
-} ?>
-      <?php } echo '<br />';
+} ?> 
+      <?php }} echo '<br />';
 	  comments_template(); ?>
 
-<?php   endwhile; endif; ?>
+<?php  endwhile; endif; ?>
 
 		
 	<?php  do_action( 'bp_after_blog_page' ) ?>
@@ -203,8 +222,8 @@ echo'<div class="entry">';
     <br />
     </div>
     <?php get_footer(); ?>
-	<?php
-		
-	}
-}
-?>
+	<?php	}}
+	
+	
+	
+	 ?>

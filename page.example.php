@@ -1,6 +1,18 @@
-<?php
-/*
-	Template Name: Example Page Test
-*/
-
-setup_pagelines_template();
+<?php
+
+
+/*
+
+
+	Template Name: Example Page Test
+
+
+*/
+
+
+
+
+
+setup_pagelines_template();
+
+

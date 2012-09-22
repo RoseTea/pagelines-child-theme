@@ -48,12 +48,11 @@ $quests_ne = $quest_posts_count - $quests_e - $quests_a - $quests_c - $quests_m;
  $testing = $wpdb->get_var('select option_value from wp_options where option_name = "cp_module_ranks_data"');
 $new = unserialize($testing);
 ksort($new);
-$new_array=array(current($new),next($new),next($new),next($new),next($new),next($new),next($new),next($new),next($new),next($new),next($new),next($new),next($new),next($new),next($new));
+$new_array=array_values($new);
 reset($new);
 $rank = cp_module_ranks_getRank($user_id);
 $rank_points = array_search($rank,$new_array);
 $current_rank_points = array_search($rank,$new);
-// Get the sum of the gold, silver, and copper.
 $prev_lvl = $new_array[$rank_points];
 $xp = cp_getPoints($user_id);
 $current_lvl = array_search($next_lvl,$new);
@@ -68,20 +67,6 @@ if ($percentage <=1 ){$percentage = 1;}
 reset($new);
 $new = unserialize($testing);
 ksort($new);
-$first_value = next($new);
-$second_value = next($new);
-$third_value = next($new);
-$forth_value = next($new);
-$fifth_value = next($new);
-$sixth_value = next($new);
-$seventh_value = next($new);
-$eaighth_value = next($new);
-$nineth_value = next($new);
-$tenth_value = next($new);
-$eleventh_value = next($new);
-$twelveth_value = next($new);
-$thirteenth_value = next($new);
-$forteenth_value = next($new);
 
 
 //Gold!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -113,10 +98,19 @@ $rt_g=mysql_query($qry_g);
 $rt_xp=mysql_query($qry_xp);
 $rt_per=mysql_query($qry_per);
 $minutes_percentage = $minutes_rnd/$minutes_required*100;
+
+
+
+//leaderboards
+$xp_lbs= $wpdb->get_results("select id, totalxp from wp_total_cur order by totalxp DESC limit 0, 30");
+
+
+
+
 ?> 
  <head>
-<link rel="stylesheet" href="/wp-content/themes/pagelines-template-theme/sections/statspage/myown_js/ui-lightness/jquery-ui-1.8.21.custom.css" type="text/css" />
-<link rel="stylesheet" type="text/css" href="/wp-content/themes/pagelines-template-theme/sections/statspage/myown_js/myown_style.css" /> 
+<link rel="stylesheet" href="/wp-content/themes/<?php echo  get_stylesheet(); ?>/sections/statspage/myown_js/ui-lightness/jquery-ui-1.8.21.custom.css" type="text/css" />
+<link rel="stylesheet" type="text/css" href="/wp-content/themes/<?php echo  get_stylesheet(); ?>/sections/statspage/myown_js/myown_style.css" /> 
 
 </head>
 <body>
@@ -130,7 +124,7 @@ echo get_avatar( $user_id, '96',  $default = '<path_to_url>');
 </div>
 <div id="profileinfo">
 <table cellpadding="0px" id="profiletable">
-<tr><td width="150px"><a href="<?php echo $user_website; ?>" >Website</a></td><td width="150px">Ecountered: <?php echo $quests_e+$quests_a+$quests_c+$quests_m; ?></td><tr>
+<tr><td width="150px"><a href="<?php echo $user_website; ?>" target="_blank" >Website</a></td><td width="150px">Ecountered: <?php echo $quests_e+$quests_a+$quests_c+$quests_m; ?></td><tr>
 <tr><td><?php echo $rank; ?> </td><td> Accepted: <?php echo $quests_a+$quests_c+$quests_m;?></td></tr>
 <tr><td> <?php print $xp_left.'/'.$xp_level;?></td><td> Completed: <?php echo $quests_c+$quests_m; ?></td></tr>
 <tr><td> <?php print $gold_rnd; ?> Gold </td><td> Mastered: <?php echo $quests_m; ?></td></tr>
@@ -184,15 +178,15 @@ background: -moz-linear-gradient(top, #ff6600 0%, #ff6600 20%, rgba(255,255,255,
 	padding: 5px 0px;
  	color: #FFF;
  	font-weight: bold;
-	background-color:#ff6600;
+	background-color:#486fb3;
 	
 background: -webkit-gradient(linear, left top, left bottom, 
-color-stop(0%, #ff6600), color-stop(20%, #ff6600), color-stop(150%, rgba(255,255,255,.9))); 
-background: -webkit-linear-gradient(top, #ff6600, rgba(255,255,255,.9)); 
-background: -moz-linear-gradient(top, #ff6600 0%, #ff6600 20%, rgba(255,255,255,.9) 150%);
+color-stop(0%, #486fb3), color-stop(20%, #486fb3), color-stop(150%, rgba(255,255,255,.9))); 
+background: -webkit-linear-gradient(top, #486fb3, rgba(255,255,255,.9)); 
+background: -moz-linear-gradient(top, #486fb3 0%, #486fb3 20%, rgba(255,255,255,.9) 150%);
  	text-align: center; width: ".$minutes_percentage."%\">";
 	print "</div></div>";
-	print $xp_left.'/'.$xp_level;
+	print $minutes_rnd.'/'.$minutes_required;
 	 ?>
   
  </div>
@@ -205,12 +199,17 @@ background: -moz-linear-gradient(top, #ff6600 0%, #ff6600 20%, rgba(255,255,255,
 <li><a href="#minutes">Minutes</a></li>
 <li><a href="#gold">Gold</a></li>
 <li><a href="#log">Log-ins</a></li>
+<li><a href="#xp_lb">XP LB</a></li>
+
 </ul>
 <div id="log">
 <?php
 
-$log_list = $wpdb->get_results("select datetime from wp__3wp_logintracker_logins where user_id = $user_id order by l_id desc");
-foreach ($log_list as $lg_list){foreach($lg_list as $log_lst){ echo $log_lst.'<br />';}}
+/*$log_list = $wpdb->get_results("select i_datetime from wp_3wp_activity_monitor_index where user_id = $user_id and activity_id = 'wp_login' order by i_id desc");*/
+$gold_login_history = $wpdb->get_var("select logins from wp_class_cur_logintracker where uid = $user_id ");
+
+$loglist = explode('~', $gold_login_history);
+foreach ($loglist as $lg_list){echo $lg_list.'<br/>';}
 
 ?>
 </div>
@@ -283,13 +282,44 @@ $permalink = get_permalink( $ids );
                          </table>
                          
 </div>
+<div id="xp_lb">
+<?php
+
+$xp_int = 1;
+	?>
+	<table>
+    <tr><th align="left">#</th><th align="left">Gamer Tag</th><th align="left">XP</th></tr>
+    <?php
+foreach($xp_lbs as $xp_lb){
+
+	$xp_id = $xp_lb->id;
+	$xp_user_info = get_userdata($xp_id);
+$xp_gamertag = $xp_user_info->display_name ;
+	$xp_lb_xp = $xp_lb->totalxp; 
+    echo '<tr><td>'.$xp_int.'</td><td>'.$xp_gamertag.'</td><td>'.$xp_lb_xp.'</td></tr>';
+	$xp_int = $xp_int + 1;
+	
+	
+
+	}
+
+
+	
+	?>
+    </table>
+	<?php
+
+
+?>                         
+</div>
+
 
  </div>
  
- <script src="/wp-content/themes/pagelines-template-theme/sections/statspage/myown_jquery.js"></script>
-<script src="/wp-content/themes/pagelines-template-theme/sections/statspage/myown_js/jquery-ui.js"></script>
-<script src="/wp-content/themes/pagelines-template-theme/sections/statspage/myown_js/development-bundle/external/jquery.cookie.js"></script>
-<script src="/wp-content/themes/pagelines-template-theme/sections/statspage/myown_js/ui.js"></script>
+ <script src="/wp-content/themes/<?php echo  get_stylesheet(); ?>/sections/statspage/myown_jquery.js"></script>
+<script src="/wp-content/themes/<?php echo  get_stylesheet(); ?>/sections/statspage/myown_js/jquery-ui.js"></script>
+<script src="/wp-content/themes/<?php echo  get_stylesheet(); ?>/sections/statspage/myown_js/development-bundle/external/jquery.cookie.js"></script>
+<script src="/wp-content/themes/<?php echo  get_stylesheet(); ?>/sections/statspage/myown_js/ui.js"></script>
 
 
 
@@ -303,7 +333,7 @@ $permalink = get_permalink( $ids );
 		</div><!-- .padder -->
 	</div><!-- #content -->
 
-<?php get_footer(); ?>
+
 	<?php
 		
 	}
